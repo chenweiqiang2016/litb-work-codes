@@ -115,7 +115,7 @@
 
     <bean id="npuApi" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
         <property name="proxyFactory" ref="factHessian"/>
-        <property name="serviceUrl"><value>http://192.168.62.26:8080/npu.api</value></property>
+        <property name="serviceUrl"><value>${npu.api.url}</value></property>
         <property name="ServiceInterface"><value>com.litb.npu.api.NPUAPI</value></property>
     </bean>    
 
