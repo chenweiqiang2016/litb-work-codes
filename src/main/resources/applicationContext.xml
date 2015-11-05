@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright 2010 The myBatis Team
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:util="http://www.springframework.org/schema/util"
+     xmlns:aop="http://www.springframework.org/schema/aop"
+     xmlns:tx="http://www.springframework.org/schema/tx"
+     xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+     xmlns:context="http://www.springframework.org/schema/context"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+     http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+     default-autowire="byName" 
+     default-lazy-init="false"
+     >
+
+	<!--  
+		不同级别的属性文件对应不同的环境：
+			 classpath:/jdbc.properties		开发环境
+			 file:/home/aims/aims-services/jdbc.properties 测试环境
+			 file:/etc/aims/aims-services/jdbc.properties 正式环境
+	-->
+    <context:property-placeholder 
+    	ignore-resource-not-found="true"
+    	system-properties-mode="OVERRIDE"
+		location="
+			classpath*:/jdbc.properties,
+			file:E:/workspace/pushproducts/target/classes/jdbc.properties,
+			file:/etc/aims/jdbc.properties,
+			classpath*:/ct.properties" />
+
+<!-- *********************************************************************** -->
+<!-- *********************Database Related Configurations******************* -->
+<!-- *********************************************************************** -->
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="maxActive" value="${jdbc.maxActive}" />
+		<property name="validationQuery" value="${jdbc.validationQuery}" />
+		<property name="maxIdle" value="30" />
+		<property name="maxWait" value="1000" />
+		<property name="testWhileIdle" value="true" />
+		<property name="timeBetweenEvictionRunsMillis" value="10000" />
+	</bean>
+    
+    <!-- transaction manager, use JtaTransactionManager for global tx -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <!-- enable transaction demarcation with annotations -->
+    <tx:annotation-driven />
+
+    <!-- define the SqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="typeAliasesPackage" value="com.litb.npu.api.entity.aims" />
+    </bean>
+
+    <!-- scan for mappers and let them be autowired -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.litb.aims.dao.push" />
+    </bean>
+
+<!-- *********************************************************************** -->
+<!-- *********************Service Related Configurations******************** -->
+<!-- *********************************************************************** -->
+
+    <!-- enable component scanning (beware that this does not enable mapper scanning!) -->    
+    <context:component-scan base-package= "com.litb.aims.service.push, com.litb.aims.push" />
+
+    <!-- force CGLIB to use class proxy, 
+        see http://stackoverflow.com/questions/8391944/getting-spring-error-bean-named-x-must-be-of-type-y-but-was-actually-of-ty 
+    -->
+    <aop:config proxy-target-class="true"/>
+    
+    
+
+    <!-- enable autowire -->
+    <context:annotation-config />
+
+    <bean id="factHessian" class="com.caucho.hessian.client.HessianProxyFactory">
+        <property name="chunkedPost" value="false" />
+        <property name="readTimeout" value="1800000" /> <!-- 3mins -->
+    </bean>
+
+    <bean id="aimsApi" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+        <property name="proxyFactory" ref="factHessian"/>
+        <property name="serviceUrl"><value>http://192.168.66.24:18080/aims-services/aimsapi</value></property>
+        <property name="ServiceInterface"><value>com.litb.aims.api.AimsAPI</value></property>
+    </bean>
+
+    <bean id="npuApi" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+        <property name="proxyFactory" ref="factHessian"/>
+        <property name="serviceUrl"><value>http://192.168.62.26:8080/npu.api</value></property>
+        <property name="ServiceInterface"><value>com.litb.npu.api.NPUAPI</value></property>
+    </bean>    
+
+</beans>

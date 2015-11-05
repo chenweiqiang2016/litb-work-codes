@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.litb.aims.dao.push.PushDao">
+    <select id="getProductsToPushFromAimsDb" resultType="AIMSItem">
+	    SELECT
+	        ps.product_id as productId,
+	        ps.merchant_id as aimsMerchantId,
+	        m.name as merchantName,
+	        ps.img_url as imageUrl,
+	        ps.product_url as productUrl,
+	        ps.product_name as name,
+	        ps.reviews as reviews, 
+	        ps.reviews_monthly_increase as reviewsMonthlyIncrease,
+	        ps.reviews_12months_increase as last12MonthReviewsIncrease,
+	        ps.reviews_3months_increase as last3MonthReviewsIncrease,
+	        ps.sellstart_date as sellStartDate,
+	        ps.category_path as aimsCategoryPath,
+	        ps.price as price,
+	        ps.score as score,
+	        ps.category_index as categoryIndex,
+	        m.price_unit as priceUnit
+	    FROM product_scores ps
+	        JOIN merchants m ON ps.merchant_id=m.id
+	        JOIN products p ON ps.product_id=p.id
+	    WHERE
+	        ps.merchant_id IN
+	    <foreach collection="merchantIdList" index="index" item="item" open="(" separator="," close=")">
+	        #{item}
+	    </foreach>
+	    AND ps.ct_status=0
+	    AND p.cm_picked=1
+	    ORDER BY ps.merchant_id, ps.product_id
+    </select>
+</mapper>
+
+
+

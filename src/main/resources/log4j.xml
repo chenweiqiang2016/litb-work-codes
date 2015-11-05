@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS}-[%p] [%c{1}:%L] %m %n" />
+		</layout>
+	</appender>
+
+	<appender name="logfile" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="${user.home}/aims/logs/aims-services.log" />
+		<param name="Encoding" value="UTF-8" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />
+		<!-- <param name="MaxFileSize" value="100120KB" /> -->
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS}-[%p] [%c:%L] %m %n" />
+		</layout>
+	</appender>
+	
+	<appender name="productmatch" class="org.apache.log4j.DailyRollingFileAppender">
+	    <param name="File" value="${user.home}/aims/logs/productMatch.log" />
+	    <param name="Encoding" value="UTF-8"/>
+	    <param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />
+	    <layout class="org.apache.log4j.PatternLayout">
+	         <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS}-[%p] [%c:%L] %m %n" />
+	    </layout>
+	</appender>
+
+    <appender name="price_logfile" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="${user.home}/aims/logs/aims-prices.log" />
+        <param name="Encoding" value="UTF-8" />
+        <param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />
+        <!-- <param name="MaxFileSize" value="100120KB" /> -->
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS}-[%p] [%c:%L] %m %n" />
+        </layout>
+    </appender>
+
+	<appender name="push_logfile" class="org.apache.log4j.DailyRollingFileAppender">
+	    <param name="File" value="${user.home}/aims/logs/push2npu.log" />
+	    <param name="Encoding" value="UTF-8"/>
+	    <param name="DatePattern" value="'.'yyyy-MM-dd'.log'" />
+	    <layout class="org.apache.log4j.PatternLayout">
+	         <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS}-[%p] [%c:%L] %m %n" />
+	    </layout>
+	</appender>
+    
+    <logger name="com.litb.aims.published.ProductMatchApiImpl" additivity="false">
+        <appender-ref ref="stdout" />
+        <appender-ref ref="productmatch"/>
+    </logger>
+
+    <logger name="com.litb.aims.published.PriceMatchAPIImpl" additivity="false">
+        <appender-ref ref="stdout" />
+        <appender-ref ref="price_logfile" />
+    </logger>
+    
+    <logger name="com.litb.aims" additivity="false">
+        <appender-ref ref="stdout" />
+        <appender-ref ref="push_logfile" />
+    </logger>
+
+    <logger name="org.springframework.remoting" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="logfile" />
+    </logger>
+
+    <logger name="org.springframework.jdbc.datasource.DataSourceTransactionManager" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="logfile" />
+    </logger>
+
+    <root>
+        <priority value="INFO" />
+        <appender-ref ref="stdout" />
+        <appender-ref ref="logfile" />
+    </root>	
+	
+</log4j:configuration>
