@@ -25,7 +25,7 @@ public class FindTopMerchants {
 		System.out.println("Begin this time process...");
 		System.out.println("products file name is: " + productsFile);
 		System.out.println("merchants file name is: " + merchantsFile);
-		String dataDir = "E:/";
+		String dataDir = ""; //"E:/";
 		Workbook readwb = null;
 		List<Map.Entry<String, Integer>> productsPerMerchantList = null;
 		try {
@@ -142,6 +142,15 @@ public class FindTopMerchants {
 	}
 	
 	public static void main(String[] args){
-		analyFiles("slt-p.xls", "slt-s.xls");
+		File dirFile = new File("datas");
+		File[] files = dirFile.listFiles();
+		for(File file: files){
+			if (file.getAbsolutePath().indexOf("products") > 0){
+				String productsFile = file.getAbsolutePath();
+				String suppliersFile = file.getAbsolutePath().replaceAll("products", "suppliers");
+				analyFiles(productsFile, suppliersFile);
+			}
+		}
+		//analyFiles("slt-p.xls", "slt-s.xls");
 	}
 }
