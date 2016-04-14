@@ -45,7 +45,6 @@
     	system-properties-mode="OVERRIDE"
 		location="
 			classpath*:/jdbc.properties,
-			file:E:/workspace/pushproducts/target/classes/jdbc.properties,
 			file:/etc/aims/jdbc.properties,
 			classpath*:/ct.properties" />
 

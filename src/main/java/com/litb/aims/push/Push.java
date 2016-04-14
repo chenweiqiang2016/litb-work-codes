@@ -53,7 +53,7 @@ public class Push {
  		if (args.length==0){
  			try{
  				String encoding="UTF-8";
- 				File file = new File("c:/a.txt");
+ 				File file = new File("/home/catchtop/push2npu/merchants.txt");
  				if(file.isFile() && file.exists()){
  					InputStreamReader reader = new InputStreamReader(new FileInputStream(file), encoding);
  				    BufferedReader bufferedReader = new BufferedReader(reader);
@@ -64,7 +64,7 @@ public class Push {
  				    reader.close();
  				}else{
  					System.out.println("找不到指定文件!");
- 					logger.error("Cannot find file: /home/litb_aims/push2npu/merchants.txt");
+ 					logger.error("Cannot find file: /home/catchtop/push2npu/merchants.txt");
  					System.exit(1);
  				}
  			}catch(Exception e){
